@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using System;
+
 namespace CustomMath
 {
     public struct Vec3 : IEquatable<Vec3>
@@ -12,8 +11,8 @@ namespace CustomMath
         public float z;
 
         public float sqrMagnitude { get { throw new NotImplementedException(); } }
-        public Vector3 normalized { get { throw new NotImplementedException(); } }
-        public float magnitude { get { throw new NotImplementedException(); } }
+        public Vec3 normalized { get { return new Vec3(x / magnitude, y / magnitude, z / magnitude); } }
+        public float magnitude { get { return (float)Math.Sqrt(x * x + y * y + z * z); } }
         #endregion
 
         #region constants
@@ -119,7 +118,7 @@ namespace CustomMath
 
         public static implicit operator Vector2(Vec3 v2)
         {
-            throw new NotImplementedException();
+            return new Vector2(v2.x, v2.y);
         }
         #endregion
 
@@ -130,15 +129,29 @@ namespace CustomMath
         }
         public static float Angle(Vec3 from, Vec3 to)
         {
-            throw new NotImplementedException();
+            double dotProduct = Dot(from, to);
+            double magnitudeA = from.magnitude;
+            double magnitudeB = to.magnitude;
+
+            double cosine = dotProduct / (magnitudeA * magnitudeB);
+            double angle = Math.Acos(cosine);
+
+            return (float)angle;
         }
         public static Vec3 ClampMagnitude(Vec3 vector, float maxLength)
-        {
-            throw new NotImplementedException();
+        {            
+            float magnitude = vector.magnitude;
+            
+            if (magnitude > maxLength)
+            {
+                vector = vector.normalized * maxLength;
+            }
+
+            return vector;
         }
         public static float Magnitude(Vec3 vector)
         {
-            throw new NotImplementedException();
+            return (float)Math.Sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
         }
         public static Vec3 Cross(Vec3 a, Vec3 b)
         {
@@ -190,7 +203,11 @@ namespace CustomMath
         }
         public void Normalize()
         {
-            throw new NotImplementedException();
+            float magnitudeHolder = magnitude;
+
+            x /= magnitudeHolder;
+            y /= magnitudeHolder;
+            z /= magnitudeHolder;
         }
         #endregion
 
@@ -200,7 +217,6 @@ namespace CustomMath
             if (!(other is Vec3)) return false;
             return Equals((Vec3)other);
         }
-
         public bool Equals(Vec3 other)
         {
             return x == other.x && y == other.y && z == other.z;
